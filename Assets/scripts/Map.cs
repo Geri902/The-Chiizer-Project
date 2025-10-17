@@ -3,15 +3,18 @@ using UnityEngine;
 public class Map : MonoBehaviour
 {
     [SerializeField]
-    private int _width = 5;
+    private int _width = 9;
     [SerializeField]
-    private int _height = 5;
+    private int _height = 9;
     [SerializeField]
     private GameObject _map;
     [SerializeField]
     private GameObject _wall;
     [SerializeField]
     private GameObject _explodableWall;
+    [SerializeField]
+    private GameObject _camerObj;
+    private Camera _camera;
     private Transform _body;
 
     private float _increment;
@@ -19,10 +22,10 @@ public class Map : MonoBehaviour
     {
         _body = _map.transform;
         _increment = _wall.GetComponent<SpriteRenderer>().bounds.size.x;
-
-        // need code to center camera
+        _camera = _camerObj.GetComponent<Camera>();
 
         GenerateMap();
+        SetCamera();
     }
 
 
@@ -33,16 +36,14 @@ public class Map : MonoBehaviour
 
     private void GenerateMap()
     {
-        float startX = _width * _increment * -1;
-        float startY = _height * _increment * -1;
-        Vector2 nextPos = new Vector2(startX, startY);
+        Vector2 nextPos = new Vector2(0, 0);
 
         for (int i = 0; i < _width + 2; i++)
         {
             MakeWall(false, nextPos);
             nextPos.x += _increment;
         }
-        nextPos.x = startX;
+        nextPos.x = 0;
         nextPos.y += _increment;
 
         for (int i = 0; i < _height; i++)
@@ -60,7 +61,7 @@ public class Map : MonoBehaviour
             MakeWall(false, nextPos);
             nextPos.x += _increment;
 
-            nextPos.x = startX;
+            nextPos.x = 0;
             nextPos.y += _increment;
         }
 
@@ -76,11 +77,18 @@ public class Map : MonoBehaviour
     {
         if (explodable)
         {
-            Instantiate(_explodableWall,pos,Quaternion.identity,_body);
+            Instantiate(_explodableWall, pos, Quaternion.identity, _body);
         }
         else
         {
             Instantiate(_wall, pos, Quaternion.identity, _body);
         }
+    }
+    
+    private void SetCamera()
+    {
+        _camerObj.transform.position = new Vector3(1,1,-10);
+        //_camerObj.transform.position = new Vector3(_width * _increment / 2 + 0.5f, _height * _increment / 2 + 0.5f, -10);
+        
     }
 }
